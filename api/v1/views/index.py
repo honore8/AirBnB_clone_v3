@@ -1,31 +1,22 @@
 #!/usr/bin/python3
-"""
-landing page for api
-"""
+""" Index """
 from api.v1.views import app_views
 from flask import jsonify
 from models import storage
 
 
-@app_views.route('/status')
-def app_status():
-    """
-    Simply returns the state of the api.
-    """
-    return(jsonify(status="OK"))
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
+def status():
+    """ Returns JSON """
+    return jsonify(status="OK")
 
 
-@app_views.route('/stats')
-def app_get_count():
-    """
-    Returns statistics about the number of objects available
-    """
-    tojson = {}
-    for cls in storage.available_classes:
-        string = str(cls).lower()
-        if string[-1] is 'y':
-            string = string[0:-1] + "ies"
-        else:
-            string += "s"
-        tojson.update({string: storage.count(cls)})
-    return(jsonify(tojson))
+@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+def stats():
+    """ Returns the number of each instance type """
+    return jsonify(amenities=storage.count("Amenity"),
+                   cities=storage.count("City"),
+                   places=storage.count("Place"),
+                   reviews=storage.count("Review"),
+                   states=storage.count("State"),
+                   users=storage.count("User"))
