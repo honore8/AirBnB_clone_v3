@@ -1,25 +1,31 @@
 #!/usr/bin/python3
-""" index file foe view"""
-from flask import jsonify
+"""
+landing page for api
+"""
 from api.v1.views import app_views
+from flask import jsonify
 from models import storage
 
 
 @app_views.route('/status')
-def status():
-    """ Returns the status of the request """
-    return jsonify({"status": "OK"})
+def app_status():
+    """
+    Simply returns the state of the api.
+    """
+    return(jsonify(status="OK"))
 
 
 @app_views.route('/stats')
-def stats():
+def app_get_count():
     """
-    endpoint that retrieves the number of each objects by type
+    Returns statistics about the number of objects available
     """
-    objects = {"amenities": storage.count("Amenity"),
-               "cities": storage.count("City"),
-               "places": storage.count("Place"),
-               "reviews": storage.count("Review"),
-               "states": storage.count("State"),
-               "users": storage.count("User")}
-    return jsonify(objects)
+    tojson = {}
+    for cls in storage.available_classes:
+        string = str(cls).lower()
+        if string[-1] is 'y':
+            string = string[0:-1] + "ies"
+        else:
+            string += "s"
+        tojson.update({string: storage.count(cls)})
+    return(jsonify(tojson))
